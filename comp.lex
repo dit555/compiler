@@ -23,6 +23,10 @@ IDENTEND	({LETTER}|{DIGIT})
 "function"	{printf("FUNCTION\n"); pos += yyleng;}
 
 {IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
+
+{IDENT}{IDENTMID}+[_]			{printf("error at line %d, col %d, identifier cannot end with \"_\"\n", line, pos); exit(0);}
+{DIGIT}{IDENTMID}+{IDENTEND}		{printf("error at line %d, col %d, identifier cannot begin with a number\n", line, pos); exit(0);}
+
 .		{printf("error at line %d, col %d\n", line, pos); exit(0);}
 
 %%

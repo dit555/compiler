@@ -1,1 +1,1 @@
-IDENT Cake_and_Poop78
+error at line 1, col 0, identifier cannot begin with a number
