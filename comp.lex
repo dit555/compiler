@@ -17,6 +17,7 @@ IDENTEND	({LETTER}|{DIGIT})
 
 %%
 " "		{pos++;}
+"\t"		{pos++;}
 "\n"		{line++; pos = 0;}
 
 "function"	{printf("FUNCTION\n"); pos += yyleng;}
@@ -47,16 +48,37 @@ IDENTEND	({LETTER}|{DIGIT})
 "false"		{printf("FALSE\n"); pos += yyleng;}
 "return"	{printf("RETURN\n"); pos += yyleng;}
 
+"-"		{printf("SUB\n"); pos += yyleng;}
+"+"		{printf("ADD\n"); pos += yyleng;}
+"*"		{printf("MULT\n"); pos += yyleng;}
+"/"		{printf("DIV\n"); pos += yyleng;}
+"%"		{printf("MOD\n"); pos += yyleng;}
 
+"=="		{printf("EQ\n"); pos += yyleng;}
+"<>"		{printf("NEQ\n"); pos += yyleng;}
+"<"		{printf("LT\n"); pos += yyleng;}
+">"		{printf("GT\n"); pos += yyleng;}
+"<="		{printf("LTE\n"); pos += yyleng;}
+">="		{printf("GTE\n"); pos += yyleng;}
+
+";"		{printf("SEMICOLON\n"); pos += yyleng;}
+":"		{printf("COLON\n"); pos += yyleng;}
+","		{printf("COMMA\n"); pos += yyleng;}
+"("		{printf("L_PAREN\n"); pos += yyleng;}
+")"		{printf("R_PAREN\n"); pos += yyleng;}
+"["		{printf("L_SQUARE_BRACKET\n"); pos += yyleng;}
+"]"		{printf("R_SQUARE_BRACKET\n"); pos += yyleng;}
+":="		{printf("ASSIGN\n"); pos += yyleng;}
 
 
 {DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
+{IDENT}		{printf("IDENT %s\n", yytext); pos += yyleng;}
 {IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
 
 {IDENT}{IDENTMID}+[_]			{printf("error at line %d, col %d, identifier cannot end with \"_\"\n", line, pos); exit(0);}
 {DIGIT}{IDENTMID}+{IDENTEND}		{printf("error at line %d, col %d, identifier cannot begin with a number\n", line, pos); exit(0);}
 
-.		{printf("error at line %d, col %d\n", line, pos); exit(0);}
+.		{printf("error at line %d, col %d: unrecongized symbol \"%s\"\n", line, pos, yytext); exit(0);}
 
 %%
 
