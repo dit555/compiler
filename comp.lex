@@ -5,6 +5,7 @@
 
 DIGIT [0-9]
 LETTER [a-zA-Z]
+NUMBER (\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)
 
 %{
 	int line = 1;//line
@@ -13,9 +14,11 @@ LETTER [a-zA-Z]
 
 
 %%
+" "		{pos++;}
+"\n"		{line++; pos = 0;}
 
-"function"	{printf("FUNCTION\n"); }
-.		{printf("error\n");}
+"function"	{printf("FUNCTION\n"); pos += yyleng;}
+.		{printf("error at line %d, col %d\n", line, pos);}
 
 %%
 

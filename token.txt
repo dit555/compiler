@@ -1,7 +1,7 @@
-
 FUNCTION
-
+newline
+newline
+error at line 3, col 0
+newline
 FUNCTION
-
-FUNCTION
-
+newline
