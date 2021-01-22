@@ -3,8 +3,11 @@
   Dumitru Chiriac
   862126186 */
 
-DIGIT [0-9]
-LETTER [a-zA-Z]
+DIGIT 		[0-9]
+LETTER 		[a-zA-Z]
+IDENT 		{LETTER}
+IDENTMID	({LETTER}|{DIGIT}|[_])
+IDENTEND	({LETTER}|{DIGIT})  
 
 %{
 	int line = 1;//line
@@ -18,7 +21,9 @@ LETTER [a-zA-Z]
 
 {DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
 "function"	{printf("FUNCTION\n"); pos += yyleng;}
-.		{printf("error at line %d, col %d\n", line, pos);}
+
+{IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
+.		{printf("error at line %d, col %d\n", line, pos); exit(0);}
 
 %%
 
