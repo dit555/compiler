@@ -19,9 +19,38 @@ IDENTEND	({LETTER}|{DIGIT})
 " "		{pos++;}
 "\n"		{line++; pos = 0;}
 
-{DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
 "function"	{printf("FUNCTION\n"); pos += yyleng;}
+"beginparams"	{printf("BEGIN_PARAMS\n"); pos += yyleng;}
+"endparams"	{printf("END_PARAMS\n"); pos += yyleng;}
+"beginlocals"	{printf("BEGIN_LOCALS\n"); pos += yyleng;}
+"endlocals"	{printf("END_LOCALS\n"); pos += yyleng;}
+"beginbody"	{printf("BEGIN_BODY\n"); pos += yyleng;}
+"endbody"	{printf("END_BODY\n"); pos += yyleng;}
+"integer"	{printf("INTEGER\n"); pos += yyleng;}
+"array"		{printf("ARRAY\n"); pos += yyleng;}
+"of"		{printf("OF\n"); pos += yyleng;}
+"if"		{printf("IF\n"); pos += yyleng;}
+"then"		{printf("THEN\n"); pos += yyleng;}
+"endif"		{printf("ENDIF\n"); pos += yyleng;}
+"else"		{printf("ELSE\n"); pos += yyleng;}
+"while"		{printf("WHILE\n"); pos += yyleng;}
+"do"		{printf("DO\n"); pos += yyleng;}
+"beginloop"	{printf("BEGINELOOP\n"); pos += yyleng;}
+"endloop"	{printf("ENDLOOP\n"); pos += yyleng;}
+"break"		{printf("BREAK\n"); pos += yyleng;}
+"read"		{printf("READ\n"); pos += yyleng;}
+"write"		{printf("WRITE\n"); pos += yyleng;}
+"and"		{printf("AND\n"); pos += yyleng;}
+"or"		{printf("OR\n"); pos += yyleng;}
+"not"		{printf("NOT\n"); pos += yyleng;}
+"true"		{printf("TRUE\n"); pos += yyleng;}
+"false"		{printf("FALSE\n"); pos += yyleng;}
+"return"	{printf("RETURN\n"); pos += yyleng;}
 
+
+
+
+{DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
 {IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
 
 {IDENT}{IDENTMID}+[_]			{printf("error at line %d, col %d, identifier cannot end with \"_\"\n", line, pos); exit(0);}
