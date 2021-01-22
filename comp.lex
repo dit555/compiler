@@ -5,7 +5,6 @@
 
 DIGIT [0-9]
 LETTER [a-zA-Z]
-NUMBER (\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)
 
 %{
 	int line = 1;//line
@@ -17,6 +16,7 @@ NUMBER (\.{DIGIT}+)|({DIGIT}+(\.{DIGIT}*)?([eE][+-]?[0-9]+)?)
 " "		{pos++;}
 "\n"		{line++; pos = 0;}
 
+{DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
 "function"	{printf("FUNCTION\n"); pos += yyleng;}
 .		{printf("error at line %d, col %d\n", line, pos);}
 
