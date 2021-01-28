@@ -70,13 +70,14 @@ IDENTEND	({LETTER}|{DIGIT})
 "]"		{printf("R_SQUARE_BRACKET\n"); pos += yyleng;}
 ":="		{printf("ASSIGN\n"); pos += yyleng;}
 
+({IDENT}{IDENTMID}+[_]+)|({IDENT}+[_]+)			{printf("error at line %d, col %d, identifier \"%s\" cannot end in an underscore\n", line, pos, yytext); exit(0);}
+({DIGIT}+{IDENTMID}+{IDENTEND})|({DIGIT}+{IDENTMID}+)		{printf("error at line %d, col %d, identifier \"%s\" must begin with a letter\n", line, pos, yytext); exit(0);}
+
+
+{IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
+{IDENT}					{printf("IDENT %s\n", yytext); pos += yyleng;}
 
 {DIGIT}+	{printf("NUMBER %s\n", yytext); pos += yyleng;}
-{IDENT}		{printf("IDENT %s\n", yytext); pos += yyleng;}
-{IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
-
-{IDENT}{IDENTMID}+[_]			{printf("error at line %d, col %d, identifier cannot end with \"_\"\n", line, pos); exit(0);}
-{DIGIT}{IDENTMID}+{IDENTEND}		{printf("error at line %d, col %d, identifier cannot begin with a number\n", line, pos); exit(0);}
 
 .		{printf("error at line %d, col %d: unrecongized symbol \"%s\"\n", line, pos, yytext); exit(0);}
 
