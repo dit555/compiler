@@ -77,8 +77,8 @@ IDENTEND	({LETTER}|{DIGIT})
 ({DIGIT}+{IDENTMID}+{IDENTEND})|({DIGIT}+{IDENTMID}+)		{printf("error at line %d, col %d, identifier \"%s\" must begin with a letter\n", line, pos, yytext); exit(0);}
 
 
-{IDENT}{IDENTMID}+{IDENTEND}		{printf("IDENT %s\n", yytext); pos += yyleng;}
-{IDENT}					{printf("IDENT %s\n", yytext); pos += yyleng;}
+{IDENT}{IDENTMID}+{IDENTEND}		{pos += yyleng; yylval.idnt = yytext; return IDENT;}
+{IDENT}					{pos += yyleng; yylval.idnt = yytext; return IDENT;}
 
 {DIGIT}+	{pos += yyleng; yylval.ival = atoi(yytext); return NUMBER;}
 
