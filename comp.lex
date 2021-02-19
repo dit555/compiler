@@ -43,7 +43,7 @@ IDENTEND	({LETTER}|{DIGIT})
 "endloop"	{ pos += yyleng;return ENDLOOP;}
 "break"		{ pos += yyleng; return BREAK;}
 "read"		{ pos += yyleng; return READ;}
-"write"		{ pos += yyleng; reutrn WRITE;}
+"write"		{ pos += yyleng; return WRITE;}
 "and"		{ pos += yyleng; return AND;}
 "or"		{ pos += yyleng; return OR;}
 "not"		{ pos += yyleng; return NOT;}
@@ -62,7 +62,7 @@ IDENTEND	({LETTER}|{DIGIT})
 "<"		{ pos += yyleng; return LT;}
 ">"		{ pos += yyleng; return GT;}
 "<="		{ pos += yyleng; return LTE;}
-">="		{ pos += yyleng; reutrn GTE;}
+">="		{ pos += yyleng; return GTE;}
 
 ";"		{ pos += yyleng; return SEMICOLON;}
 ":"		{ pos += yyleng; return COLON;}
@@ -85,19 +85,3 @@ IDENTEND	({LETTER}|{DIGIT})
 .		{printf("error at line %d, col %d: unrecongized symbol \"%s\"\n", line, pos, yytext); exit(0);}
 
 %%
-
-int main(int argc, char ** argv){
-	if(argc >= 2){
-      		yyin = fopen(argv[1], "r");
-      		if(yyin == NULL){
-			printf("input: ");
-			yyin = stdin;
-      		}
-   	}
-   	else{
-    		printf("input: ");
-      		yyin = stdin;
-   	}
-
-   	yylex();
-}

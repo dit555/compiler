@@ -1,7 +1,3 @@
-flex:
-	flex comp.lex
-	gcc -o comp lex.yy.c -lfl
-
 bison:	comp.lex comp.y
 	bison -v -d --file-prefix=y comp.y
 	flex comp.lex
