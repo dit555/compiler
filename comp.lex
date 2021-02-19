@@ -10,6 +10,7 @@ IDENTMID	({LETTER}|{DIGIT}|[_])
 IDENTEND	({LETTER}|{DIGIT})  
 
 %{
+	#include "y.tab.h"
 	int line = 1;//line
 	int pos = 0;//character # in line
 %}
