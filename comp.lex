@@ -18,7 +18,7 @@ IDENTEND	({LETTER}|{DIGIT})
 
 %%
 ("##")(.)+("\n") 	{line++; pos = 0;}
-
+("##")			{pos++;}
 " "		{pos++;}
 "\t"		{pos++;}
 "\n"		{line++; pos = 0;}
