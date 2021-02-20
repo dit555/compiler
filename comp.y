@@ -24,9 +24,7 @@
 
 %%
 Program:
-	  Function {printf("Prog_Start -> Functions\n");}
 	| Function Program {printf("Program -> Function\n");}
-	| {printf("Functions -> Epsilon\n");}	
 	;
 
 Ident:
@@ -67,6 +65,7 @@ Array:
 
 Statement:
 	  Var ASSIGN Expression {printf("Statement -> Var ASSIGN Expression\n");}
+	| Var EQ Expression {yyerror("did you mean\':=\'");}
 	| IF Bool_Expr THEN Then
 	| WHILE Bool_Expr BEGINLOOP WLoop
 	| DO BEGINLOOP BLoop
@@ -135,6 +134,7 @@ Re:
 	| TRUE {printf("Relation_Expr -> TRUE\n");}
 	| FALSE {printf("Relation_Expr -> FALSE\n");}
 	| L_PAREN Bool_Expr R_PAREN {printf("Relation_Expr -> L_PAREN Bool-Expr R_PAREN\n");}
+	| R_PAREN Bool_Expr {yyerror("missing \')\'");}
 	;
 
 Comp:
@@ -181,6 +181,8 @@ Exp:
 Var:
 	  Ident {printf("Var -> IDENT\n");}
 	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET {printf("Var -> IDENT L_SQUARE_BRACKET Expression R_SQUARE_BRACKET\n");}
+	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\'");}
+	;
 %%
 
 int main(int argc, char **argv) {
