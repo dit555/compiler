@@ -73,6 +73,9 @@ IDENTEND	({LETTER}|{DIGIT})
 "]"		{ pos += yyleng; return R_SQUARE_BRACKET;}
 ":="		{ pos += yyleng; return ASSIGN;}
 
+
+{DIGIT}+	{pos += yyleng; yylval.ival = atoi(yytext); return NUMBER;}
+
 ({IDENT}{IDENTMID}+[_]+)|({IDENT}+[_]+)			{printf("error at line %d, col %d, identifier \"%s\" cannot end in an underscore\n", line, pos, yytext); exit(0);}
 ({DIGIT}+{IDENTMID}+{IDENTEND})|({DIGIT}+{IDENTMID}+)		{printf("error at line %d, col %d, identifier \"%s\" must begin with a letter\n", line, pos, yytext); exit(0);}
 
@@ -80,7 +83,6 @@ IDENTEND	({LETTER}|{DIGIT})
 {IDENT}{IDENTMID}+{IDENTEND}		{pos += yyleng; yylval.idnt = yytext; return IDENT;}
 {IDENT}					{pos += yyleng; yylval.idnt = yytext; return IDENT;}
 
-{DIGIT}+	{pos += yyleng; yylval.ival = atoi(yytext); return NUMBER;}
 
 .		{printf("error at line %d, col %d: unrecongized symbol \"%s\"\n", line, pos, yytext); exit(0);}
 
