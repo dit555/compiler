@@ -9,7 +9,7 @@
 
 %union{
 	int ival;
-	char *idnt;
+	char* idnt;
 }
 
 %error-verbose
@@ -17,25 +17,52 @@
 %token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY INTEGER ARRAY OF IF THEN ENDIF ELSE WHILE DO BEGINLOOP ENDLOOP BREAK READ WRITE AND OR NOT TRUE FALSE RETURN
 %token SUB ADD MULT DIV MOD
 %token EQ NEQ NEW LT GT LTE GTE
-%token IDENT NUMBER
 %token SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN
 
-
+%token <ival> NUMBER
+%token <idnt> IDENT
 
 %%
 Program:
-	Function
+	  Function
 	;
 
-
+Ident:
+	  IDENT {printf("ident -> IDENT %S\n",$1);}
 
 Function:
-	FUNCTION IDENT SEMICOLON BEGIN_PARAMS Params {printf("ident -> IDENT main\n");}
+	  FUNCTION Ident SEMICOLON BEGIN_PARAMS Params
 	;
 
 Params:
+	  Declaration SEMICOLON Params
+	| Declaration SEMICOLON END_PARAMS BEGIN_LOCALS Locals
+	| END_PARAMS BEGIN_LOCALS Locals {printf("declarations -> epsilon\n");}
+	;
+	
+Locals:
+	  Declaration SEMICOLON Locals
+	| Declaration SEMICOLON END_LOCALS BEGIN_BODY Body
+	| END_LOCALS BEGIN_BODY Body {printf("locals -> epsilon\n");}
+
+Body:
+	  Statement SEMICOLON Body
+	| Statement SEMICOLON END_BODY
 	;
 
+
+
+Declaration:
+	  Ident COMMA Declaration
+	| Ident SEMICOLON Array
+
+Array:
+	  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF NUMBER
+	| NUMBER
+	;
+
+
+Statement:
 %%
 
 int main(int argc, char **argv) {
