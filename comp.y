@@ -63,6 +63,158 @@ Array:
 
 
 Statement:
+	  VarTemp
+	| IfTemp
+	| WhileTemp
+	| DoTemp
+	| ReadTemp
+	| WriteTemp
+	| BreakTemp
+	| ReturnTemp
+	;
+
+VarTemp:
+	  Var ASSIGN Expression
+	;
+
+IfTemp:
+	  IF Bool_Exp THEN Then
+	;
+
+Then:
+	  Statement SEMICOLON End
+	;
+
+End:
+	  Then
+	| ENDIF
+	| ELSE Else
+	;
+
+Else:
+	  Statement SEMICOLON Else
+	| Statement SEMICOLON ENDIF
+	;
+
+WhileTemp:
+	  WHILE Bool-Expr BEGIN_LOOP WLoop
+	;
+
+WLoop:
+	  Statement SEMICOLON WLoop
+	| Statement SEMICOLON END_LOOP
+	;
+
+DoTemp:
+	  DO BEGIN_LOOP BLoop
+	;
+
+BLoop:
+	  Statement SEMICOLON BLoop
+	| Statement SEMICOLON END_LOOP WHILE Bool_Expr
+	;
+
+ReadTemp:
+	  READ Read
+	;
+
+Read:
+	  Var COMMA Read | Var
+	;
+
+BreakTemp:
+	  BREAK
+	;
+
+ReturnTemp:
+	  RETURN Expression
+	;
+
+
+Bool_Expr:
+	  Relation_And_Expr OR Relation_And_Expr
+	| Relation_And_Expr
+	;
+
+Relation_And_Expr:
+	  Relation_Expr AND Relation_Expr
+	| Relation_Expr 
+	;
+
+Relation_Expr:
+	  NOT Re
+	| Re
+	;
+
+Re:
+	  Expresion Comp Expression
+	| TRUE
+	| FALSE
+	| L_PAREN Bool_expr R_PAREN
+	;
+
+Comp:
+	  EQ
+	| NEQ
+	| LT
+	| GT
+	| LTE
+	| GTE
+	;
+
+Expression:
+	  Multiplicative_Expr Me
+	:
+
+Me:
+	  ADD Multiplicative_Expr Me
+	| SUB Multiplicative_Expr Me
+	| ADD Multiplicative_Expr
+	| SUB Multiplicative_Expr
+	;
+
+Multiplicative_Expr:
+	  Term T
+	;
+
+T:
+	  MULT Term T
+	| DIV Term T
+	| MOD Term T
+	| MULT Term
+	| DIV Term
+	| MOD Term 
+	;
+
+Term:
+	  Neg
+	| Id
+	;
+
+Neg:
+	  -Num
+	| Num
+	:
+
+Num:
+	  Var
+	| NUMBER
+	| L_PAREN Expression R_PAREN
+	;
+
+Id:
+	  Ident L_PAREN Exp
+	;
+
+Exp:
+	  Expression COMMA Exp
+	| Expression R_PAREN
+	| R_PAREN
+	;
+
+Var:
+	  Ident
+	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 %%
 
 int main(int argc, char **argv) {
