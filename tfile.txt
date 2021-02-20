@@ -1,7 +1,3 @@
-##this is a comment, please ignore me
-##coment p 2
-##com # ent
-
 function fibonacci;
 beginparams
 	k : integer;

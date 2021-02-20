@@ -24,11 +24,13 @@
 
 %%
 Program:
-	  Function
+	  Function {printf("Prog_Start -> Fuctions");}
+	| Function Program
+	| {printf("Functions -> Epsilon\n");}	
 	;
 
 Ident:
-	  IDENT {printf("ident -> IDENT %S\n",$1);}
+	  IDENT {printf("ident -> IDENT %s\n",$1);}
 
 Function:
 	  FUNCTION Ident SEMICOLON BEGIN_PARAMS Params
@@ -54,32 +56,26 @@ Body:
 
 Declaration:
 	  Ident COMMA Declaration
-	| Ident SEMICOLON Array
+	| Ident COLON Array
+	| Ident COLON INTEGER
+	;
 
 Array:
-	  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF NUMBER
-	| NUMBER
+	  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
 	;
 
 
 Statement:
-	  VarTemp
-	| IfTemp
-	| WhileTemp
-	| DoTemp
-	| ReadTemp
-	| WriteTemp
-	| BreakTemp
-	| ReturnTemp
-	;
-
-VarTemp:
 	  Var ASSIGN Expression
+	| IF Bool_Expr THEN Then
+	| WHILE Bool_Expr BEGINLOOP WLoop
+	| DO BEGINLOOP BLoop
+	| READ Read
+	| WRITE Write
+	| BREAK
+	| RETURN Expression
 	;
 
-IfTemp:
-	  IF Bool_Exp THEN Then
-	;
 
 Then:
 	  Statement SEMICOLON End
@@ -96,39 +92,26 @@ Else:
 	| Statement SEMICOLON ENDIF
 	;
 
-WhileTemp:
-	  WHILE Bool-Expr BEGIN_LOOP WLoop
-	;
 
 WLoop:
 	  Statement SEMICOLON WLoop
-	| Statement SEMICOLON END_LOOP
-	;
-
-DoTemp:
-	  DO BEGIN_LOOP BLoop
+	| Statement SEMICOLON ENDLOOP
 	;
 
 BLoop:
 	  Statement SEMICOLON BLoop
-	| Statement SEMICOLON END_LOOP WHILE Bool_Expr
-	;
-
-ReadTemp:
-	  READ Read
+	| Statement SEMICOLON ENDLOOP WHILE Bool_Expr
 	;
 
 Read:
 	  Var COMMA Read | Var
 	;
 
-BreakTemp:
-	  BREAK
+Write:
+	  Var COMMA Write
+	| Var
 	;
 
-ReturnTemp:
-	  RETURN Expression
-	;
 
 
 Bool_Expr:
@@ -147,10 +130,10 @@ Relation_Expr:
 	;
 
 Re:
-	  Expresion Comp Expression
+	  Expression Comp Expression
 	| TRUE
 	| FALSE
-	| L_PAREN Bool_expr R_PAREN
+	| L_PAREN Bool_Expr R_PAREN
 	;
 
 Comp:
@@ -163,27 +146,16 @@ Comp:
 	;
 
 Expression:
-	  Multiplicative_Expr Me
-	:
-
-Me:
-	  ADD Multiplicative_Expr Me
-	| SUB Multiplicative_Expr Me
-	| ADD Multiplicative_Expr
-	| SUB Multiplicative_Expr
+	  Multiplicative_Expr
+	| Multiplicative_Expr ADD Expression 
+	| Multiplicative_Expr SUB Expression
 	;
 
 Multiplicative_Expr:
-	  Term T
-	;
-
-T:
-	  MULT Term T
-	| DIV Term T
-	| MOD Term T
-	| MULT Term
-	| DIV Term
-	| MOD Term 
+	  Term
+	| Term MULT Multiplicative_Expr
+	| Term DIV Multiplicative_Expr
+	| Term MOD Multiplicative_Expr
 	;
 
 Term:
@@ -192,7 +164,7 @@ Term:
 	;
 
 Neg:
-	  -Num
+	  SUB Num
 	| Num
 	:
 
