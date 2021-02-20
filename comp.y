@@ -36,15 +36,13 @@ Function:
 
 Params:
 	  Declaration SEMICOLON Params
-	| Declaration SEMICOLON END_PARAMS BEGIN_LOCALS Locals
-	| END_PARAMS BEGIN_LOCALS Locals {printf("declarations -> epsilon\n");}
+	| END_PARAMS BEGIN_LOCALS Locals
 	;
 	
 Locals:
 	  Declaration SEMICOLON Locals
-	| Declaration SEMICOLON END_LOCALS BEGIN_BODY Body
-	| END_LOCALS BEGIN_BODY Body {printf("locals -> epsilon\n");}
-
+	| END_LOCALS BEGIN_BODY Body
+	;
 Body:
 	  Statement SEMICOLON Body
 	| Statement SEMICOLON END_BODY {printf("Function -> FUNCTION IDENT SEMICOLON BEGINPARAMS Declaration ENDPARAM BEGINLOCALS Declaration ENDLOCALS BEGINBODY Statement ENDBODY\n");}
