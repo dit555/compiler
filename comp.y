@@ -159,14 +159,12 @@ Multiplicative_Expr:
 	;
 
 Term:
-	  Neg
-	| Id
-	;
-
-Neg:
 	  SUB Num
 	| Num
-	:
+	| Ident L_PAREN Expression Exp R_PAREN
+	| Ident L_PAREN Expression R_PAREN
+	| Ident L_PAREN R_PAREN
+	;
 
 Num:
 	  Var
@@ -174,14 +172,9 @@ Num:
 	| L_PAREN Expression R_PAREN
 	;
 
-Id:
-	  Ident L_PAREN Exp
-	;
-
 Exp:
-	  Expression COMMA Exp
-	| Expression R_PAREN
-	| R_PAREN
+	  COMMA Expression Exp
+	| COMMA Expression
 	;
 
 Var:
