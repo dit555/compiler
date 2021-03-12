@@ -9,8 +9,8 @@
 	
 	void yyerror(const char *msg);
 	void reset(); //resets msg to avoid any weird stuff
-	char* temp(); //generaes a char* for temps
-	char* local(); //generates a char* for locals
+	void temp(); //generaes a char* for temps
+	void local(); //generates a char* for locals
 
 
 	extern int line;
@@ -19,7 +19,8 @@
 
 	char* curFunc; //function we are currently on
 	char msg[254]; //line to be printed, 254 is max mil line size
-
+	char tmp[9]; //stores temp name in a global
+	char lcl[9]; //stores local as a global
 	int tNum = 0; //number of temproary var
 	int lNum = 0; //number of local var
 
@@ -60,7 +61,10 @@ Ident:
 Function:
 	  FUNCTION IDENT SEMICOLON BEGIN_PARAMS Params 
 		{
-			
+			for(tNum = 0; tNum < 100;){
+				temp();
+				printf("%s\n", tmp);
+			}			
 		}
 	;
 
@@ -226,5 +230,20 @@ int main(int argc, char **argv) {
 
 void yyerror(const char *msg) {
    printf("** Line %d, position %d: %s\n", line, pos, msg);
+}
+
+void temp(){
+	strcpy(tmp,"_temp_");
+	if (tNum >= 10){
+		int ones = tNum % 10;
+		tmp[6] = (char)((tNum - ones) / 10 + 48);
+		tmp[7] = (char)(ones + 48);
+	}
+	else{
+		tmp[6] = (char)(tNum + 48);	
+	}
+	tNum++;
+
+
 }
 
