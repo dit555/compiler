@@ -25,16 +25,21 @@
 	int lNum = 0; //number of local var
 
 	char *hold[10]; //allows storage of temp n and local n
+	int hIndex;
 
 	struct symbol{
 		char* name; //name of symbol
 		int type; //type code as defined above
 		char* func; //function it belongs to
+		char* label; //name of labele for symobo
+		int inUse; //1 if used 0 if avalible but declared before
 	};
 
-	char stable[100]; //symbol table, 100 is overkill but is a safe number
+	struct symbol sTable[100]; //symbol table, 100 is overkill but is a safe number
+	int sIndex = 0; //current free index in stable
 
-	int checkS(char* name, char func); //check symbol table for avalibility
+	int checkS(struct symbol s); //check symbol table for avalibility
+	int addToS(struct symbol s);
 %}
 
 %union{
@@ -51,6 +56,10 @@
 
 %token <ival> NUMBER
 %token <idnt> IDENT
+
+%left PLUS MINUS
+%left MULT DIV
+%left L_PAREN
 
 %%
 Program:
@@ -264,3 +273,16 @@ void local(){
 void reset(){
 	memset(msg, 0, 254);
 }
+
+int checkS(struct symbol s){
+	//place holder
+}
+
+int addToS(struct symbol s){
+	if (sIndex > 99) {printf("symbol table at max\n"); return 0;}
+	else{
+		sTable[sIndex] = s;
+		sIndex++;
+		return 1;
+	}	
+} 
