@@ -51,6 +51,7 @@
 	
 	int checkS(struct symbol* s); //check symbol table for avalibility
 	int addToS(struct symbol* s);
+	int findS(char *n); //finds the symbol in tble and puts its ret in temp
 %}
 
 %union{
@@ -109,9 +110,6 @@ Params:
 
 EndP:
 	END_PARAMS
-		{
-		//printf("end params\n");
-		}
 	;
 	
 Locals:
@@ -121,9 +119,6 @@ Locals:
 
 EndL:
 	END_LOCALS
-		{
-		//printf("end locals\n");
-		}
 	;
 Body:
 	  Statement SEMICOLON Body
@@ -163,6 +158,7 @@ Declaration:
 		strcat(msg, ".[] ");
 		strcat(msg, tmp);
 		printf("%s, %d\n", msg, holdI[hIndexI - 1]);
+		printf("= %s, $0\n", tmp);
 		reset();
 		while(i < hIndexS){
 			holdS[i].type = A;
@@ -174,6 +170,7 @@ Declaration:
 			strcat(msg, ".[] ");
 			strcat(msg, tmp);
 			printf("%s, %d\n", msg, holdI[hIndexI - 1]);
+			printf("= %s, $0\n", tmp);
 			reset();
 			i++;
 		}
@@ -195,6 +192,7 @@ Declaration:
 		strcat(msg, ". ");
 		strcat(msg, tmp);
 		printf("%s\n", msg);
+		printf("= %s, $0\n", tmp);
 		//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, $1);
 		while(i < hIndexS){
 			holdS[i].type = I;
@@ -206,6 +204,7 @@ Declaration:
 			strcat(msg, ". ");
 			strcat(msg, tmp);
 			printf("%s\n", msg);
+			printf("= %s, $0\n", tmp);
 			reset();
 			i++;
 			//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, holdS[i - 1].name);
@@ -231,7 +230,7 @@ Statement:
 	| IF Bool_Expr THEN Then
 	| WHILE Bool_Expr BEGINLOOP WLoop
 	| DO BEGINLOOP BLoop
-	| READ Read
+	| Read
 	| WRITE Write
 	| BREAK 
 	| RETURN Expression 
@@ -265,8 +264,14 @@ BLoop:
 	;
 
 Read:
-	  Var COMMA Read 
-	| Var 
+	  READ Var COMMA Read 
+		{
+
+		}
+	| READ Var 
+		{
+
+		}
 	;
 
 Write:
@@ -407,4 +412,16 @@ int addToS(struct symbol* s){
 		sIndex++;
 		return 1;
 	}	
+}
+
+int findS(char *n){
+	i = 0;
+	while (i < sIndex){
+		if (strcmp(n, sTable[i].name) == 0){
+			strcpy(tmp, sTable[i].name);
+			return 1;
+		}
+		i++;
+	}
+	return 0;
 } 
