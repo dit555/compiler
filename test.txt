@@ -1,12 +1,14 @@
 function main;
 beginparams
-	fart : integer;
 endparams
 beginlocals
+	n,j : integer;
 	k : integer;
 endlocals
 beginbody
-	k := 1;
+	read k;
+	read j;
 	write k;
+	write j;
 endbody
 	

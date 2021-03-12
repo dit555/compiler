@@ -19,6 +19,8 @@
 
 	char msg[254]; //line to be printed, 254 is max mil line size
 	char tmp[9]; //stores temp name in a global
+	char tmp2[20]; //stores names of idents
+	char *tmp3;
 	char lcl[10]; //stores local as a global
 	int tNum = 0; //number of temproary var
 	int lNum = 0; //number of local var
@@ -82,7 +84,9 @@ Program:
 Ident:
 	  IDENT 
 		{
-		
+		strcpy(tmp2, $1);
+		findS(tmp2);
+		//printf("%s is %s\n",tmp, tmp3);
 		}
 	;
 
@@ -90,9 +94,10 @@ IdentF:
 	IDENT 
 		{
 		struct symbol f;
-		strcpy(f.name, $1);
+		tmp3 = strdup($1);
+		strcpy(f.name, tmp3);
 		f.type = F;
-		strcpy(f.func, $1);
+		strcpy(f.func, tmp3);
 		addToS(&f);
 		printf("func %s\n",f.name);
 		strcpy(curFunc,f.name);
@@ -141,13 +146,21 @@ Identt:
 		//printf("hIndex: %d\n", hIndexS);
 		}
 	;	
+IdentD:
+	IDENT
+	{
+	
+	strcpy(tmp2, $1);
+	//printf("temp2 is: %s\n", tmp2);
+	}
+	;
 
 Declaration:
 	  Identt COMMA Declaration 
-	| IDENT COLON Array
+	| IdentD COLON Array
 		{
 		struct symbol t;
-		strcpy(t.name, $1);
+		strcpy(t.name, tmp2);
 		strcpy(t.func, curFunc);
 		t.type = A;
 		temp();
@@ -158,7 +171,6 @@ Declaration:
 		strcat(msg, ".[] ");
 		strcat(msg, tmp);
 		printf("%s, %d\n", msg, holdI[hIndexI - 1]);
-		printf("= %s, $0\n", tmp);
 		reset();
 		while(i < hIndexS){
 			holdS[i].type = A;
@@ -170,7 +182,6 @@ Declaration:
 			strcat(msg, ".[] ");
 			strcat(msg, tmp);
 			printf("%s, %d\n", msg, holdI[hIndexI - 1]);
-			printf("= %s, $0\n", tmp);
 			reset();
 			i++;
 		}
@@ -178,10 +189,10 @@ Declaration:
 		hIndexS = 0;
 		reset(); 
 		}
-	| IDENT COLON INTEGER 
+	| IdentD COLON INTEGER 
 		{
 		struct symbol t;
-		strcpy(t.name, $1);
+		strcpy(t.name, tmp2);
 		strcpy(t.func, curFunc);
 		t.type = I;
 		temp();
@@ -192,7 +203,6 @@ Declaration:
 		strcat(msg, ". ");
 		strcat(msg, tmp);
 		printf("%s\n", msg);
-		printf("= %s, $0\n", tmp);
 		//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, $1);
 		while(i < hIndexS){
 			holdS[i].type = I;
@@ -204,7 +214,6 @@ Declaration:
 			strcat(msg, ". ");
 			strcat(msg, tmp);
 			printf("%s\n", msg);
-			printf("= %s, $0\n", tmp);
 			reset();
 			i++;
 			//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, holdS[i - 1].name);
@@ -231,7 +240,7 @@ Statement:
 	| WHILE Bool_Expr BEGINLOOP WLoop
 	| DO BEGINLOOP BLoop
 	| Read
-	| WRITE Write
+	| Write
 	| BREAK 
 	| RETURN Expression 
 	;
@@ -266,17 +275,27 @@ BLoop:
 Read:
 	  READ Var COMMA Read 
 		{
-
-		}
-	| READ Var 
+		reset();
+		printf(".< %s\n", tmp);
+		} 
+	| READ Var
 		{
-
-		}
+		reset();
+		printf(".< %s\n", tmp);
+		} 
 	;
 
 Write:
-	  Var COMMA Write
-	| Var 
+	  WRITE Var COMMA Write
+		{
+		reset();
+		printf(".< %s\n", tmp);
+		}
+	| WRITE Var
+		{
+		reset();
+		printf(".> %s\n",tmp);
+		} 
 	;
 
 
@@ -418,7 +437,7 @@ int findS(char *n){
 	i = 0;
 	while (i < sIndex){
 		if (strcmp(n, sTable[i].name) == 0){
-			strcpy(tmp, sTable[i].name);
+			strcpy(tmp, sTable[i].ret);
 			return 1;
 		}
 		i++;

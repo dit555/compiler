@@ -12,17 +12,13 @@ IDENTEND	({LETTER}|{DIGIT})
 %{
 	#include "y.tab.h"
 	int line = 1;//line
-	int pos = 0;//character # in line
+	int pos = 0;//character # in lin
 %}
 
 
 %%
 ("##")(.)+("\n") 	{line++; pos = 0;}
 ("##")			{pos++;}
-" "		{pos++;}
-"\t"		{pos++;}
-"\n"		{line++; pos = 0;}
-
 "function"	{ pos += yyleng; return FUNCTION; }
 "beginparams"	{ pos += yyleng; return BEGIN_PARAMS;}
 "endparams"	{ pos += yyleng; return END_PARAMS;}
@@ -80,8 +76,13 @@ IDENTEND	({LETTER}|{DIGIT})
 ({DIGIT}+{IDENTMID}+{IDENTEND})|({DIGIT}+{IDENTMID}+)		{printf("error at line %d, col %d, identifier \"%s\" must begin with a letter\n", line, pos, yytext); exit(0);}
 
 
-{IDENT}{IDENTMID}+{IDENTEND}		{pos += yyleng; yylval.idnt = yytext; return IDENT;}
-{IDENT}					{pos += yyleng; yylval.idnt = yytext; return IDENT;}
+{IDENT}{IDENTMID}+{IDENTEND}		{pos += yyleng;  yylval.idnt = strdup(yytext); return IDENT;}
+{IDENT}					{pos += yyleng; yylval.idnt = strdup(yytext); return IDENT;}
+
+" "		{pos++;}
+"\t"		{pos++;}
+"\n"		{line++; pos = 0;}
+
 
 
 .		{printf("error at line %d, col %d: unrecongized symbol \"%s\"\n", line, pos, yytext); exit(0);}
