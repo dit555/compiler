@@ -9,6 +9,9 @@
 	
 	void yyerror(const char *msg);
 	void reset(); //resets msg to avoid any weird stuff
+	char* temp(); //generaes a char* for temps
+	char* local(); //generates a char* for locals
+
 
 	extern int line;
 	extern int pos;
@@ -16,6 +19,9 @@
 
 	char* curFunc; //function we are currently on
 	char msg[254]; //line to be printed, 254 is max mil line size
+
+	int tNum = 0; //number of temproary var
+	int lNum = 0; //number of local var
 
 	struct symbol{
 		char* name; //name of symbol
@@ -52,7 +58,10 @@ Ident:
 	  IDENT 
 
 Function:
-	  FUNCTION Ident SEMICOLON BEGIN_PARAMS Params
+	  FUNCTION IDENT SEMICOLON BEGIN_PARAMS Params 
+		{
+			
+		}
 	;
 
 Params:
