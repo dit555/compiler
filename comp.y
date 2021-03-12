@@ -20,9 +20,11 @@
 	char* curFunc; //function we are currently on
 	char msg[254]; //line to be printed, 254 is max mil line size
 	char tmp[9]; //stores temp name in a global
-	char lcl[9]; //stores local as a global
+	char lcl[10]; //stores local as a global
 	int tNum = 0; //number of temproary var
 	int lNum = 0; //number of local var
+
+	char *hold[10]; //allows storage of temp n and local n
 
 	struct symbol{
 		char* name; //name of symbol
@@ -61,10 +63,7 @@ Ident:
 Function:
 	  FUNCTION IDENT SEMICOLON BEGIN_PARAMS Params 
 		{
-			for(tNum = 0; tNum < 100;){
-				temp();
-				printf("%s\n", tmp);
-			}			
+			
 		}
 	;
 
@@ -97,7 +96,7 @@ Array:
 
 Statement:
 	  Var ASSIGN Expression 
-	| Var EQ Expression {yyerror("did you mean\':=\'");}
+	| Var EQ Expression {yyerror("did you mean\':=\', assuming \':=\' and continuing");}
 	| IF Bool_Expr THEN Then
 	| WHILE Bool_Expr BEGINLOOP WLoop
 	| DO BEGINLOOP BLoop
@@ -166,7 +165,7 @@ Re:
 	| TRUE 
 	| FALSE 
 	| L_PAREN Bool_Expr R_PAREN 
-	| R_PAREN Bool_Expr {yyerror("missing \')\'");}
+	| R_PAREN Bool_Expr {yyerror("missing \')\', assuming \')\' and continuing");}
 	;
 
 Comp:
@@ -213,7 +212,7 @@ Exp:
 Var:
 	  Ident 
 	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET 
-	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\'");}
+	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\', assuming \']\' and continuing");}
 	;
 %%
 
@@ -247,3 +246,21 @@ void temp(){
 
 }
 
+void local(){
+	strcpy(lcl,"_local_");
+	if (tNum >= 10){
+		int ones = tNum % 10;
+		lcl[7] = (char)((tNum - ones) / 10 + 48);
+		lcl[8] = (char)(ones + 48);
+	}
+	else{
+		lcl[7] = (char)(tNum + 48);	
+	}
+	tNum++;
+
+
+}
+
+void reset(){
+	memset(msg, 0, 254);
+}
