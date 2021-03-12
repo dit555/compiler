@@ -1,10 +1,31 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>	
+
+	#define i 1 // of type int
+	#define f 2 //of ype function
+
+	
 	void yyerror(const char *msg);
+	void reset(); //resets msg to avoid any weird stuff
+
 	extern int line;
 	extern int pos;
 	FILE * yyin;
+
+	char* curFunc; //function we are currently on
+	char msg[254]; //line to be printed, 254 is max mil line size
+
+	struct symbol{
+		char* name; //name of symbol
+		int type; //type code as defined above
+		char* func; //function it belongs to
+	};
+
+	char stable[100]; //symbol table, 100 is overkill but is a safe number
+
+	int checkS(char* name, char func); //check symbol table for avalibility
 %}
 
 %union{
@@ -80,7 +101,7 @@ Then:
 
 End:
 	  Then
-	| ENDIF ]
+	| ENDIF 
 	| ELSE Else
 	;
 

@@ -1,4 +1,4 @@
-bison:	comp.lex comp.y
+parser:	comp.lex comp.y
 	bison -v -d --file-prefix=y comp.y
 	flex comp.lex
 	gcc -o comp y.tab.c lex.yy.c -lfl
