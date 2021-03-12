@@ -15,9 +15,9 @@ endparams
 beginlocals
 
 n : integer;
-a : array[1000] of integer;	## prime candidates array
-i, j : integer;
-x, sqrt_n : integer;
+a, b : array[1000] of integer;	## prime candidates array
+i, j: integer;
+x, sqrt_n: integer;
 
 endlocals
 

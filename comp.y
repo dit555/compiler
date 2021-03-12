@@ -24,6 +24,7 @@
 	int lNum = 0; //number of local var
 	char tempI[20]; //temporary stroage for Ident name
 	char curFunc[20];
+	int i = 0; //for the purpose of loops
 
 	char *holdT[10]; //allows storage of temp n
 	int hIndexT = 0;
@@ -124,6 +125,7 @@ Declaration:
 		strcpy(t.func, curFunc);
 		holdS[hIndexS] = t;
 		hIndexS++;
+		//printf("hIndex: %d\n", hIndexS);
 		}
 	| IDENT COLON Array
 		{
@@ -138,8 +140,24 @@ Declaration:
 		reset();
 		strcat(msg, ".[] ");
 		strcat(msg, tmp);
-		hIndexI--;
 		printf("%s, %d\n", msg, holdI[hIndexI]);
+		reset();
+		while(i < hIndexS){
+			holdS[i].type = A;
+			temp();
+			strcpy(holdS[i].ret, tmp);
+			holdS[i].inUse = 1;
+			addToS(&holdS[i]);
+			reset();
+			strcat(msg, ".[] ");
+			strcat(msg, tmp);
+			printf("%s, %d\n", msg, holdI[hIndexI]);
+			reset();
+			i++;
+		}
+		hIndexS = 0;
+		i = 0;
+		hIndexI--;
 		reset(); 
 		}
 	| IDENT COLON INTEGER 
@@ -147,7 +165,7 @@ Declaration:
 		struct symbol t;
 		strcpy(t.name, $1);
 		strcpy(t.func, curFunc);
-		t.type = A;
+		t.type = I;
 		temp();
 		strcpy(t.ret, tmp);
 		t.inUse = 1;
@@ -155,8 +173,22 @@ Declaration:
 		reset();
 		strcat(msg, ". ");
 		strcat(msg, tmp);
-		hIndexI--;
 		printf("%s\n", msg);
+		while(i < hIndexS){
+			holdS[i].type = I;
+			temp();
+			strcpy(holdS[i].ret, tmp);
+			holdS[i].inUse = 1;
+			addToS(&holdS[i]);
+			reset();
+			strcat(msg, ". ");
+			strcat(msg, tmp);
+			printf("%s\n", msg);
+			reset();
+			i++;
+		}
+		hIndexS = 0;
+		i = 0;
 		reset(); 
 		}
 	;
