@@ -5,7 +5,7 @@
 
 	#define I 1 // of type int
 	#define F 2 //of ype function
-
+	#define A 3//of type array
 	
 	void yyerror(const char *msg);
 	void reset(); //resets msg to avoid any weird stuff
@@ -17,20 +17,22 @@
 	extern int pos;
 	FILE * yyin;
 
-	char* curFunc; //function we are currently on
 	char msg[254]; //line to be printed, 254 is max mil line size
 	char tmp[9]; //stores temp name in a global
 	char lcl[10]; //stores local as a global
 	int tNum = 0; //number of temproary var
 	int lNum = 0; //number of local var
 	char tempI[20]; //temporary stroage for Ident name
+	char curFunc[20];
 
+	char *holdT[10]; //allows storage of temp n
+	int hIndexT = 0;
 
-	char *holdT[10]; //allows storage of temp n and local n
-	int hIndexT;
+	char *holdL[10]; //holds local
+	int hIndexL = 0;
 
-	char *holdL[10];
-	int hIndexL;
+	int holdI[10]; //holds integers
+	int hIndexI = 0;
 
 	struct symbol{
 		char name[20]; //name of symbol
@@ -42,7 +44,10 @@
 
 	struct symbol sTable[100]; //symbol table, 100 is overkill but is a safe number
 	int sIndex = 0; //current free index in stable
-
+	
+	struct symbol holdS[10];
+	int hIndexS = 0;
+	
 	int checkS(struct symbol* s); //check symbol table for avalibility
 	int addToS(struct symbol* s);
 %}
@@ -86,7 +91,8 @@ IdentF:
 		f.type = F;
 		strcpy(f.func, $1);
 		addToS(&f);
-		printf("func %s, %s\n",f.name);
+		printf("func %s\n",f.name);
+		strcpy(curFunc,f.name);
 		}
 	;
 
@@ -111,13 +117,56 @@ Body:
 
 
 Declaration:
-	  Ident COMMA Declaration 
-	| Ident COLON Array
-	| Ident COLON INTEGER 
+	  IDENT COMMA Declaration 
+		{
+		struct symbol t;
+		strcpy(t.name, $1);
+		strcpy(t.func, curFunc);
+		holdS[hIndexS] = t;
+		hIndexS++;
+		}
+	| IDENT COLON Array
+		{
+		struct symbol t;
+		strcpy(t.name, $1);
+		strcpy(t.func, curFunc);
+		t.type = A;
+		temp();
+		strcpy(t.ret, tmp);
+		t.inUse = 1;
+		addToS(&t);
+		reset();
+		strcat(msg, ".[] ");
+		strcat(msg, tmp);
+		hIndexI--;
+		printf("%s, %d\n", msg, holdI[hIndexI]);
+		reset(); 
+		}
+	| IDENT COLON INTEGER 
+		{
+		struct symbol t;
+		strcpy(t.name, $1);
+		strcpy(t.func, curFunc);
+		t.type = A;
+		temp();
+		strcpy(t.ret, tmp);
+		t.inUse = 1;
+		addToS(&t);
+		reset();
+		strcat(msg, ". ");
+		strcat(msg, tmp);
+		hIndexI--;
+		printf("%s\n", msg);
+		reset(); 
+		}
 	;
 
 Array:
-	  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
+	  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER
+		{
+		holdI[hIndexI] = (int)$3;
+		hIndexI++;
+		} 
 	;
 
 
