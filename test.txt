@@ -2,13 +2,13 @@ function main;
 beginparams
 endparams
 beginlocals
-	n,j : integer;
-	k : integer;
+	k,n,i : integer;
 endlocals
 beginbody
-	read k;
-	read j;
-	write k;
-	write j;
+	read k, read n;
+	read i;
+
+	write k, write n;
+	write i;
 endbody
 	

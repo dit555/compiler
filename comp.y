@@ -53,12 +53,15 @@
 	
 	int checkS(struct symbol* s); //check symbol table for avalibility
 	int addToS(struct symbol* s);
-	int findS(char *n); //finds the symbol in tble and puts its ret in temp
+	char* findS(char *n); //finds the symbol in tble and puts its ret in temp
 %}
 
 %union{
 	int ival;
 	char* idnt;
+	char* ret;
+	char* name;
+	struct symbol* s;
 }
 
 %error-verbose
@@ -71,10 +74,12 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
+%type<ret> Ident Var
+
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
-
+%left IDENT
 
 %%
 Program:
@@ -84,8 +89,8 @@ Program:
 Ident:
 	  IDENT 
 		{
-		strcpy(tmp2, $1);
-		findS(tmp2);
+		tmp3 = $1;
+		$$ = findS(tmp3);
 		//printf("%s is %s\n",tmp, tmp3);
 		}
 	;
@@ -276,25 +281,28 @@ Read:
 	  READ Var COMMA Read 
 		{
 		reset();
-		printf(".< %s\n", tmp);
+		char* t = strdup($2);
+		
+		printf(".< %s \n", t);
 		} 
 	| READ Var
 		{
 		reset();
-		printf(".< %s\n", tmp);
+		char* t = strdup($2);
+		printf(".< %s\n", t);
 		} 
 	;
 
 Write:
 	  WRITE Var COMMA Write
 		{
-		reset();
-		printf(".< %s\n", tmp);
+		char* t = strdup($2);	
+		printf(".> %s\n", t);
 		}
 	| WRITE Var
 		{
-		reset();
-		printf(".> %s\n",tmp);
+		char* t = strdup($2);
+		printf(".> %s\n",t);
 		} 
 	;
 
@@ -365,7 +373,7 @@ Exp:
 	;
 
 Var:
-	  Ident 
+	  Ident {$$ = $1;}
 	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET 
 	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\', assuming \']\' and continuing");}
 	;
@@ -433,12 +441,11 @@ int addToS(struct symbol* s){
 	}	
 }
 
-int findS(char *n){
+char* findS(char *n){
 	i = 0;
 	while (i < sIndex){
 		if (strcmp(n, sTable[i].name) == 0){
-			strcpy(tmp, sTable[i].ret);
-			return 1;
+			return sTable[i].ret;
 		}
 		i++;
 	}
