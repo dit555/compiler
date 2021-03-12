@@ -128,6 +128,9 @@ EndL:
 Body:
 	  Statement SEMICOLON Body
 	| Statement SEMICOLON END_BODY 
+		{
+		printf("endfunc\n");
+		}
 	;
 
 
@@ -174,6 +177,8 @@ Declaration:
 			reset();
 			i++;
 		}
+		i = 0;
+		hIndexS = 0;
 		reset(); 
 		}
 	| IDENT COLON INTEGER 
@@ -205,6 +210,8 @@ Declaration:
 			i++;
 			//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, holdS[i - 1].name);
 		}
+		i = 0;
+		hIndexS = 0;
 		reset(); 
 		}
 	;
