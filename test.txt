@@ -1,0 +1,12 @@
+function main;
+beginparams
+	fart : integer;
+endparams
+beginlocals
+	k : integer;
+endlocals
+beginbody
+	k := 1;
+	write k;
+endbody
+	

@@ -72,6 +72,7 @@
 %left MULT DIV
 %left L_PAREN
 
+
 %%
 Program:
 	| Function Program  
@@ -103,12 +104,26 @@ Function:
 
 Params:
 	  Declaration SEMICOLON Params
-	| END_PARAMS BEGIN_LOCALS Locals
+	| EndP BEGIN_LOCALS Locals
+	;
+
+EndP:
+	END_PARAMS
+		{
+		//printf("end params\n");
+		}
 	;
 	
 Locals:
 	  Declaration SEMICOLON Locals
-	| END_LOCALS BEGIN_BODY Body
+	| EndL BEGIN_BODY Body
+	;
+
+EndL:
+	END_LOCALS
+		{
+		//printf("end locals\n");
+		}
 	;
 Body:
 	  Statement SEMICOLON Body
@@ -116,17 +131,21 @@ Body:
 	;
 
 
-
-Declaration:
-	  IDENT COMMA Declaration 
+Identt:
+	IDENT
 		{
 		struct symbol t;
 		strcpy(t.name, $1);
+		//printf("name: %s\n", t.name);
 		strcpy(t.func, curFunc);
 		holdS[hIndexS] = t;
 		hIndexS++;
 		//printf("hIndex: %d\n", hIndexS);
 		}
+	;	
+
+Declaration:
+	  Identt COMMA Declaration 
 	| IDENT COLON Array
 		{
 		struct symbol t;
@@ -140,7 +159,7 @@ Declaration:
 		reset();
 		strcat(msg, ".[] ");
 		strcat(msg, tmp);
-		printf("%s, %d\n", msg, holdI[hIndexI]);
+		printf("%s, %d\n", msg, holdI[hIndexI - 1]);
 		reset();
 		while(i < hIndexS){
 			holdS[i].type = A;
@@ -151,13 +170,10 @@ Declaration:
 			reset();
 			strcat(msg, ".[] ");
 			strcat(msg, tmp);
-			printf("%s, %d\n", msg, holdI[hIndexI]);
+			printf("%s, %d\n", msg, holdI[hIndexI - 1]);
 			reset();
 			i++;
 		}
-		hIndexS = 0;
-		i = 0;
-		hIndexI--;
 		reset(); 
 		}
 	| IDENT COLON INTEGER 
@@ -174,6 +190,7 @@ Declaration:
 		strcat(msg, ". ");
 		strcat(msg, tmp);
 		printf("%s\n", msg);
+		//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, $1);
 		while(i < hIndexS){
 			holdS[i].type = I;
 			temp();
@@ -186,9 +203,8 @@ Declaration:
 			printf("%s\n", msg);
 			reset();
 			i++;
+			//printf("i :%d,  S: %d, name: %s\n", i, hIndexS, holdS[i - 1].name);
 		}
-		hIndexS = 0;
-		i = 0;
 		reset(); 
 		}
 	;
