@@ -3,8 +3,8 @@
 	#include <stdlib.h>
 	#include <string.h>	
 
-	#define i 1 // of type int
-	#define f 2 //of ype function
+	#define I 1 // of type int
+	#define F 2 //of ype function
 
 	
 	void yyerror(const char *msg);
@@ -23,23 +23,28 @@
 	char lcl[10]; //stores local as a global
 	int tNum = 0; //number of temproary var
 	int lNum = 0; //number of local var
+	char tempI[20]; //temporary stroage for Ident name
 
-	char *hold[10]; //allows storage of temp n and local n
-	int hIndex;
+
+	char *holdT[10]; //allows storage of temp n and local n
+	int hIndexT;
+
+	char *holdL[10];
+	int hIndexL;
 
 	struct symbol{
-		char* name; //name of symbol
+		char name[20]; //name of symbol
 		int type; //type code as defined above
-		char* func; //function it belongs to
-		char* label; //name of labele for symobo
+		char func[20]; //function it belongs to
+		char ret[9]; //temp number
 		int inUse; //1 if used 0 if avalible but declared before
 	};
 
 	struct symbol sTable[100]; //symbol table, 100 is overkill but is a safe number
 	int sIndex = 0; //current free index in stable
 
-	int checkS(struct symbol s); //check symbol table for avalibility
-	int addToS(struct symbol s);
+	int checkS(struct symbol* s); //check symbol table for avalibility
+	int addToS(struct symbol* s);
 %}
 
 %union{
@@ -63,17 +68,30 @@
 
 %%
 Program:
-	| Function Program 
+	| Function Program  
 	;
 
 Ident:
 	  IDENT 
+		{
+		
+		}
+	;
+
+IdentF:
+	IDENT 
+		{
+		struct symbol f;
+		strcpy(f.name, $1);
+		f.type = F;
+		strcpy(f.func, $1);
+		addToS(&f);
+		printf("func %s, %s\n",f.name);
+		}
+	;
 
 Function:
-	  FUNCTION IDENT SEMICOLON BEGIN_PARAMS Params 
-		{
-			
-		}
+	  FUNCTION IdentF SEMICOLON BEGIN_PARAMS Params
 	;
 
 Params:
@@ -274,14 +292,14 @@ void reset(){
 	memset(msg, 0, 254);
 }
 
-int checkS(struct symbol s){
+int checkS(struct symbol* s){
 	//place holder
 }
 
-int addToS(struct symbol s){
+int addToS(struct symbol* s){
 	if (sIndex > 99) {printf("symbol table at max\n"); return 0;}
 	else{
-		sTable[sIndex] = s;
+		sTable[sIndex] = *s;
 		sIndex++;
 		return 1;
 	}	
