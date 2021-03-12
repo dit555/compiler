@@ -43,6 +43,7 @@
 		char func[20]; //function it belongs to
 		char ret[9]; //temp number
 		int inUse; //1 if used 0 if avalible but declared before
+		int index; //max index of array
 	};
 
 	struct symbol sTable[100]; //symbol table, 100 is overkill but is a safe number
@@ -53,7 +54,7 @@
 	
 	int checkS(struct symbol* s); //check symbol table for avalibility
 	int addToS(struct symbol* s);
-	char* findS(char *n); //finds the symbol in tble and puts its ret in temp
+	struct symbol* findS(char *n); //finds the symbol in tble and puts its ret in temp
 %}
 
 %union{
@@ -61,7 +62,11 @@
 	char* idnt;
 	char* ret;
 	char* name;
-	struct symbol* s;
+	struct {
+		char* ret;
+		int typ;
+		int i;
+	} S;
 }
 
 %error-verbose
@@ -74,8 +79,7 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
-%type<ret> Ident Var
-
+%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
@@ -89,8 +93,12 @@ Program:
 Ident:
 	  IDENT 
 		{
-		tmp3 = $1;
-		$$ = findS(tmp3);
+		tmp3 = strdup($1);
+		struct symbol t;
+		
+		t = *findS(tmp3);
+		$$.ret = strdup(t.ret);
+		$$.typ = t.type;
 		//printf("%s is %s\n",tmp, tmp3);
 		}
 	;
@@ -281,28 +289,55 @@ Read:
 	  READ Var COMMA Read 
 		{
 		reset();
-		char* t = strdup($2);
-		
-		printf(".< %s \n", t);
+		struct symbol t;
+		strcpy(t.ret, $2.ret);
+		t.type = $2.typ;
+		if(t.type == A){
+			t.index = $2.i;			
+			printf(".[]< %s, %d\n", t.ret, t.index);
+		}
+		else
+			printf(".< %s \n", t.ret);
 		} 
 	| READ Var
 		{
 		reset();
-		char* t = strdup($2);
-		printf(".< %s\n", t);
+		struct symbol t;
+		strcpy(t.ret, $2.ret);
+		t.type = $2.typ;
+		if(t.type == A){
+			t.index = $2.i;
+			printf(".[]< %s, %d\n", t.ret, t.index);
+		}
+		else
+			printf(".< %s \n", t.ret);
 		} 
 	;
 
 Write:
 	  WRITE Var COMMA Write
 		{
-		char* t = strdup($2);	
-		printf(".> %s\n", t);
+		struct symbol t;
+		strcpy(t.ret, $2.ret);
+		t.type = $2.typ;	
+		if(t.type == A){
+			t.index = $2.i;
+			printf(".[]> %s, %d\n", t.ret, t.index);
 		}
+		else
+			printf(".> %s \n", t.ret);
+		} 
 	| WRITE Var
 		{
-		char* t = strdup($2);
-		printf(".> %s\n",t);
+		struct symbol t;
+		strcpy(t.ret, $2.ret);
+		t.type = $2.typ;
+		if(t.type == A){
+			t.index = $2.i;
+			printf(".[]> %s, %d\n", t.ret, t.index);
+		}
+		else
+			printf(".> %s \n", t.ret);
 		} 
 	;
 
@@ -341,29 +376,29 @@ Comp:
 	;
 
 Expression:
-	  Multiplicative_Expr 
+	  Multiplicative_Expr {$$ = $1;} 
 	| Multiplicative_Expr ADD Expression  
 	| Multiplicative_Expr SUB Expression 
 	;
 
 Multiplicative_Expr:
-	  Term 
+	  Term {$$ = $1;}
 	| Term MULT Multiplicative_Expr 
 	| Term DIV Multiplicative_Expr 
 	| Term MOD Multiplicative_Expr 
 	;
 
 Term:
-	  SUB Num 
-	| Num
+	  Num {$$ = $1;}
+	| SUB Num
 	| Ident L_PAREN Expression Exp R_PAREN 
 	| Ident L_PAREN Expression R_PAREN 
 	| Ident L_PAREN R_PAREN 
 	;
 
 Num:
-	  Var 
-	| NUMBER 
+	  Var {$$ = $1;}
+	| NUMBER {$$.i = $1;} 
 	| L_PAREN Expression R_PAREN 
 	;
 
@@ -374,7 +409,7 @@ Exp:
 
 Var:
 	  Ident {$$ = $1;}
-	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET 
+	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET {$$.i = $3.i;}
 	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\', assuming \']\' and continuing");}
 	;
 %%
@@ -441,11 +476,11 @@ int addToS(struct symbol* s){
 	}	
 }
 
-char* findS(char *n){
+struct symbol* findS(char *n){
 	i = 0;
 	while (i < sIndex){
 		if (strcmp(n, sTable[i].name) == 0){
-			return sTable[i].ret;
+			return &sTable[i];
 		}
 		i++;
 	}
