@@ -79,7 +79,7 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
-%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Comp
+%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Comp Bool_Exp Then
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
@@ -281,6 +281,21 @@ Statement:
 		} 
 	| Var EQ Expression {yyerror("did you mean\':=\', assuming \':=\' and continuing");}
 	| IF Bool_Expr THEN Then
+		{
+		char *l1;
+		char *l2;
+		local();
+		strcpy(l1 ,lcl);
+		local();
+		strcpy(l2 ,lcl);
+		struct symbol t1;
+		strcpy(t1.ret, $2.ret);
+		printf(". %s\n", t1.ret);
+		printf("?:= %s, %s\n", l1, t1.ret);
+		printf(":= %s\n", l2);
+		printf(": %s\n", l1);
+		printf(": %s\n", l2);
+		}
 	| WHILE Bool_Expr BEGINLOOP WLoop
 	| DO BEGINLOOP BLoop
 	| Read
@@ -376,12 +391,35 @@ Write:
 
 Bool_Expr:
 	  Relation_And_Expr OR Bool_Expr 
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret ,$1.ret);
+		strcpy(t2.ret ,$3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("|| %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);		
+		}
 	| Relation_And_Expr
 	;
 
 Relation_And_Expr:
 	  Relation_Expr AND Relation_And_Expr 
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret ,$1.ret);
+		strcpy(t2.ret ,$3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("&& %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);		
+		}
 	| Relation_Expr 
+		{ $$ = $1;}
 	;
 
 Relation_Expr:
@@ -563,9 +601,12 @@ Term:
 	| SUB Num
 		{
 		reset();
-		temp();
 		char *t = strdup($2.ret);
-		printf("* %s, %s, -1\n", tmp, t); 
+		temp();
+		printf(". %s\n", tmp);
+		printf("= %s, %d\n", tmp, 0);
+		printf("- %s, %s, %s\n", tmp, tmp, t);
+		strcpy($$.ret, tmp);
 		}
 	| Ident L_PAREN Expression Exp R_PAREN 
 	| Ident L_PAREN Expression R_PAREN 

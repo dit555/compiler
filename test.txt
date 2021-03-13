@@ -3,11 +3,12 @@ beginparams
 endparams
 beginlocals
 	i : integer;
-	k, j : array[2] of integer;
 endlocals
 beginbody
-	read i;
-	i :=  3 > 5;
+	i := 1;
+	if i == 1 then
+		i:= 3;
+	endif;
 	write i;
 endbody
 	
