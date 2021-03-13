@@ -247,7 +247,38 @@ Array:
 
 
 Statement:
-	  Var ASSIGN Expression 
+	  Var ASSIGN Expression
+		{
+		struct symbol t,t2;
+		strcpy(t.ret ,$1.ret);
+		t.type = $1.typ;
+		strcpy(t2.ret, $3.ret);
+		t2.type = $3.typ;
+		if (t.type == A && t2.type == A){
+			t.index = $1.i;
+			t2.index = $3.i;
+			reset();
+			temp();
+			printf(". %s\n", tmp);
+			printf("=[] %s, %s, %d\n", tmp, t2.ret, t2.index);
+			printf("[]= %s, %d, %s\n", t.ret, t.index , tmp);	
+
+		}
+		else if(t.type == A){
+			t.index = $1.i;
+			printf("[]= %s, %d, %s\n", t.ret, t.index, t2.ret);
+		}
+		else if( t2.type == A){
+			t2.index = $3.i;
+			reset();
+			temp();
+			printf(". %s\n", tmp);
+			printf("=[] %s, %s, %d\n", tmp, t2.ret, t2.index);
+			printf("= %s, %s\n", t.ret, tmp);
+		}
+		else
+			printf("= %s, %s\n", t.ret, t2.ret);
+		} 
 	| Var EQ Expression {yyerror("did you mean\':=\', assuming \':=\' and continuing");}
 	| IF Bool_Expr THEN Then
 	| WHILE Bool_Expr BEGINLOOP WLoop
@@ -377,20 +408,71 @@ Comp:
 
 Expression:
 	  Multiplicative_Expr {$$ = $1;} 
-	| Multiplicative_Expr ADD Expression  
+	| Multiplicative_Expr ADD Expression
+		{
+			reset();
+			temp();
+			strcpy($$.ret, tmp);
+			char *t1, *t2;
+			t1 = strdup($1.ret);
+			t2 = strdup($3.ret);
+			printf("+ %s, %s, %s\n", tmp, t1, t2); 
+		}  
 	| Multiplicative_Expr SUB Expression 
+		{
+			reset();
+			temp();
+			strcpy($$.ret, tmp);
+			char *t1, *t2;
+			t1 = strdup($1.ret);
+			t2 = strdup($3.ret);
+			printf("- %s, %s, %s\n", tmp, t1, t2); 
+		}
 	;
 
 Multiplicative_Expr:
 	  Term {$$ = $1;}
 	| Term MULT Multiplicative_Expr 
+		{
+			reset();
+			temp();
+			strcpy($$.ret, tmp);
+			char *t1, *t2;
+			t1 = strdup($1.ret);
+			t2 = strdup($3.ret);
+			printf("* %s, %s, %s\n", tmp, t1, t2); 
+		}
 	| Term DIV Multiplicative_Expr 
+		{
+			reset();
+			temp();
+			strcpy($$.ret, tmp);
+			char *t1, *t2;
+			t1 = strdup($1.ret);
+			t2 = strdup($3.ret);
+			printf("/ %s, %s, %s\n", tmp, t1, t2); 
+		}
 	| Term MOD Multiplicative_Expr 
+		{
+			reset();
+			temp();
+			strcpy($$.ret, tmp);
+			char *t1, *t2;
+			t1 = strdup($1.ret);
+			t2 = strdup($3.ret);
+			printf("% %s, %s, %s\n", tmp, t1, t2); 
+		}
 	;
 
 Term:
 	  Num {$$ = $1;}
 	| SUB Num
+		{
+		reset();
+		temp();
+		char *t = strdup($2.ret);
+		printf("* %s, %s, -1\n", tmp, t); 
+		}
 	| Ident L_PAREN Expression Exp R_PAREN 
 	| Ident L_PAREN Expression R_PAREN 
 	| Ident L_PAREN R_PAREN 
@@ -398,8 +480,18 @@ Term:
 
 Num:
 	  Var {$$ = $1;}
-	| NUMBER {$$.i = $1;} 
-	| L_PAREN Expression R_PAREN 
+	| NUMBER 
+		{
+		reset();
+		temp();
+		$$.ret = tmp;
+		$$.typ = I;
+		printf(". %s\n", tmp);
+		int t = $1;
+		printf("= %s, %d\n", tmp, t);
+		
+		} 
+	| L_PAREN Expression R_PAREN {$$ = $2;}
 	;
 
 Exp:
@@ -409,7 +501,7 @@ Exp:
 
 Var:
 	  Ident {$$ = $1;}
-	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET {$$.i = $3.i;}
+	| Ident L_SQUARE_BRACKET Expression R_SQUARE_BRACKET {$$.i = $3.i; $$.ret = $1.ret;}
 	| Ident L_SQUARE_BRACKET Expression {yyerror("missing \']\', assuming \']\' and continuing");}
 	;
 %%
