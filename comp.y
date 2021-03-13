@@ -79,7 +79,7 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
-%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num
+%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Comp
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
@@ -390,20 +390,93 @@ Relation_Expr:
 	;
 
 Re:
-	  Expression Comp Expression 
+	  Expression Comp Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		holdS[0] = t1;
+		holdS[1] = t2;
+		hIndexS = 2;
+		$$ = $2;
+		} 
 	| TRUE 
+		{
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("= %s, %d\n", t, 1);
+		$$.ret = strdup(t);
+		}	
 	| FALSE 
-	| L_PAREN Bool_Expr R_PAREN 
+		{
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("= %s, %d\n", t, 0);
+		$$.ret = strdup(t);
+		}
+	| L_PAREN Bool_Expr R_PAREN {$$ = $2;} 
 	| R_PAREN Bool_Expr {yyerror("missing \')\', assuming \')\' and continuing");}
 	;
 
 Comp:
 	  EQ 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf("== %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	| NEQ 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf("!= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	| LT 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf("< %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	| GT 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf("> %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	| LTE 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf("<= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	| GTE 
+		{
+			reset();
+			temp();
+			char *t = strdup(tmp);
+			printf(". %s\n", t);
+			printf(">= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+			strcpy($$.ret, t);
+		}
 	;
 
 Expression:
