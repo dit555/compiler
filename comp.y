@@ -422,11 +422,12 @@ Expression:
 	| Multiplicative_Expr SUB Expression 
 		{
 			reset();
-			temp();
-			strcpy($$.ret, tmp);
 			char *t1, *t2;
 			t1 = strdup($1.ret);
 			t2 = strdup($3.ret);
+			temp();
+			strcpy($$.ret, tmp);
+			printf(". %s\n", tmp);
 			printf("- %s, %s, %s\n", tmp, t1, t2); 
 		}
 	;
@@ -436,32 +437,35 @@ Multiplicative_Expr:
 	| Term MULT Multiplicative_Expr 
 		{
 			reset();
-			temp();
-			strcpy($$.ret, tmp);
 			char *t1, *t2;
 			t1 = strdup($1.ret);
 			t2 = strdup($3.ret);
+			temp();
+			strcpy($$.ret, tmp);
+			printf(". %s\n", tmp);
 			printf("* %s, %s, %s\n", tmp, t1, t2); 
 		}
 	| Term DIV Multiplicative_Expr 
 		{
 			reset();
-			temp();
-			strcpy($$.ret, tmp);
 			char *t1, *t2;
 			t1 = strdup($1.ret);
 			t2 = strdup($3.ret);
+			temp();
+			strcpy($$.ret, tmp);
+			printf(". %s\n", tmp);
 			printf("/ %s, %s, %s\n", tmp, t1, t2); 
 		}
 	| Term MOD Multiplicative_Expr 
 		{
 			reset();
-			temp();
-			strcpy($$.ret, tmp);
 			char *t1, *t2;
 			t1 = strdup($1.ret);
 			t2 = strdup($3.ret);
-			printf("% %s, %s, %s\n", tmp, t1, t2); 
+			temp();
+			strcpy($$.ret, tmp);
+			printf(". %s\n", tmp);
+			printf("\% %s, %s, %s\n", tmp, t1, t2); 
 		}
 	;
 
