@@ -79,7 +79,7 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
-%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Then
+%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Then fudge fudge1 fudge2 fudge3
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
@@ -280,7 +280,7 @@ Statement:
 			printf("= %s, %s\n", t.ret, t2.ret);
 		} 
 	| Var EQ Expression {yyerror("did you mean\':=\', assuming \':=\' and continuing");}
-	| IF Bool_Expr THEN Then
+	| IF Bool_Expr THEN fudge
 		{
 		char l1[10];
 		char l2[10];
@@ -294,7 +294,8 @@ Statement:
 		printf("?:= %s, %s\n", l1, t1.ret);
 		printf(":= %s\n", l2);
 		printf(": %s\n", l1);
-		t1.index = $4.i;
+		char t[10];
+		strcpy(t, $4.ret);
 		printf(": %s\n", l2);
 		}
 	| WHILE Bool_Expr BEGINLOOP WLoop
@@ -305,10 +306,24 @@ Statement:
 	| RETURN Expression 
 	;
 
+fudge:
+	fudge1 {$$ = $1;}
+	;
+fudge1:
+	fudge2  {$$ = $1;}
+	;
+
+fudge2:
+	fudge3  {$$ = $1;}
+	;
+
+fudge3:
+	Then  {$$ = $1;}
+	;
+
 
 Then:
-	  Statement SEMICOLON End
-		{$$.i = 69;}
+	  Statement SEMICOLON End  {strcpy($$.ret, "69696");}
 	;
 
 End:
