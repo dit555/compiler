@@ -6,8 +6,8 @@ beginlocals
 endlocals
 beginbody
 	i := 1;
-	if i == 1 then
-		i:= 3;
+	if i > 3 then
+		i:= 7;
 	endif;
 	write i;
 endbody

@@ -17,7 +17,7 @@
 	extern int pos;
 	FILE * yyin;
 
-	char msg[254]; //line to be printed, 254 is max mil line size
+	char msg[10000]; //line to be printed, 254 is max mil line size
 	char tmp[9]; //stores temp name in a global
 	char tmp2[20]; //stores names of idents
 	char *tmp3;
@@ -79,12 +79,12 @@
 %token <ival> NUMBER
 %token <idnt> IDENT
 
-%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Comp Bool_Exp Then
+%type<S> Ident Var Expression Multiplicative_Expr Term Exp Num Bool_Expr Relation_And_Expr Relation_Expr Re Then
 %left PLUS MINUS
 %left MULT DIV
 %left L_PAREN
 %left IDENT
-
+%left IF
 %%
 Program:
 	| Function Program  
@@ -282,8 +282,8 @@ Statement:
 	| Var EQ Expression {yyerror("did you mean\':=\', assuming \':=\' and continuing");}
 	| IF Bool_Expr THEN Then
 		{
-		char *l1;
-		char *l2;
+		char l1[10];
+		char l2[10];
 		local();
 		strcpy(l1 ,lcl);
 		local();
@@ -294,6 +294,7 @@ Statement:
 		printf("?:= %s, %s\n", l1, t1.ret);
 		printf(":= %s\n", l2);
 		printf(": %s\n", l1);
+		t1.index = $4.i;
 		printf(": %s\n", l2);
 		}
 	| WHILE Bool_Expr BEGINLOOP WLoop
@@ -307,6 +308,7 @@ Statement:
 
 Then:
 	  Statement SEMICOLON End
+		{$$.i = 69;}
 	;
 
 End:
@@ -403,6 +405,7 @@ Bool_Expr:
 		strcpy($$.ret, t);		
 		}
 	| Relation_And_Expr
+		{$$ = $1;}
 	;
 
 Relation_And_Expr:
@@ -447,16 +450,69 @@ Re:
 		temp();
 		char *t = strdup(tmp);
 		printf(". %s\n", t);
-		printf("== %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+		printf("== %s, %s, %s\n", t, t1.ret, t2.ret);
 		strcpy($$.ret, t);
-		hIndexS = 0;
 		} 
 	| Expression NEQ Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("!= %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);
+		} 
 	| Expression LT Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("< %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);
+		} 
 	| Expression GT Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("> %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);
+		} 
 	| Expression LTE Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("<= %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);
+		} 
 	| Expression GTE Expression
-	| Expression Comp Expression
+		{
+		struct symbol t1,t2;
+		strcpy(t1.ret, $1.ret);
+		strcpy(t2.ret, $3.ret);
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf(">= %s, %s, %s\n", t, t1.ret, t2.ret);
+		strcpy($$.ret, t);
+		} 
 	| TRUE 
 		{
 		reset();
