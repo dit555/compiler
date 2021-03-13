@@ -7,7 +7,7 @@ beginlocals
 endlocals
 beginbody
 	read i;
-	i := 2 * 3;
+	i :=  2 * 3 % 4 + 2;
 	write i;
 endbody
 	

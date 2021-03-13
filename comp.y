@@ -465,7 +465,7 @@ Multiplicative_Expr:
 			temp();
 			strcpy($$.ret, tmp);
 			printf(". %s\n", tmp);
-			printf("\% %s, %s, %s\n", tmp, t1, t2); 
+			printf("%% %s, %s, %s\n", tmp, t1, t2); 
 		}
 	;
 
