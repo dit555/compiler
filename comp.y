@@ -386,7 +386,17 @@ Relation_And_Expr:
 
 Relation_Expr:
 	  NOT Re 
-	| Re
+		{
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		char *t2 = strdup($2.ret);
+		printf(". %s\n", t);
+		printf("! %s, %s\n", t, t2);
+		strcpy($$.ret, t);
+		}
+	| Re  	
+		{$$ = $1;}
 	;
 
 Re:
@@ -431,6 +441,7 @@ Comp:
 			printf(". %s\n", t);
 			printf("== %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	| NEQ 
 		{
@@ -440,6 +451,7 @@ Comp:
 			printf(". %s\n", t);
 			printf("!= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	| LT 
 		{
@@ -449,6 +461,7 @@ Comp:
 			printf(". %s\n", t);
 			printf("< %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	| GT 
 		{
@@ -458,6 +471,7 @@ Comp:
 			printf(". %s\n", t);
 			printf("> %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	| LTE 
 		{
@@ -467,6 +481,7 @@ Comp:
 			printf(". %s\n", t);
 			printf("<= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	| GTE 
 		{
@@ -476,6 +491,7 @@ Comp:
 			printf(". %s\n", t);
 			printf(">= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
 			strcpy($$.ret, t);
+			hIndexS = 0;
 		}
 	;
 
