@@ -7,9 +7,7 @@ beginlocals
 endlocals
 beginbody
 	read i;
-	j[1] := i;
-	k[0] := j[1];
-	i := k[0];
+	i := 2 * 3;
 	write i;
 endbody
 	

@@ -411,11 +411,12 @@ Expression:
 	| Multiplicative_Expr ADD Expression
 		{
 			reset();
-			temp();
-			strcpy($$.ret, tmp);
 			char *t1, *t2;
 			t1 = strdup($1.ret);
 			t2 = strdup($3.ret);
+			temp();
+			strcpy($$.ret, tmp);
+			printf(". %s\n", tmp);
 			printf("+ %s, %s, %s\n", tmp, t1, t2); 
 		}  
 	| Multiplicative_Expr SUB Expression 
@@ -484,7 +485,7 @@ Num:
 		{
 		reset();
 		temp();
-		$$.ret = tmp;
+		$$.ret = strdup(tmp);
 		$$.typ = I;
 		printf(". %s\n", tmp);
 		int t = $1;
