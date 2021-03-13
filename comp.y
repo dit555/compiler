@@ -438,16 +438,25 @@ Relation_Expr:
 	;
 
 Re:
-	  Expression Comp Expression
+	  Expression EQ Expression
 		{
 		struct symbol t1,t2;
 		strcpy(t1.ret, $1.ret);
 		strcpy(t2.ret, $3.ret);
-		holdS[0] = t1;
-		holdS[1] = t2;
-		hIndexS = 2;
-		$$ = $2;
+		reset();
+		temp();
+		char *t = strdup(tmp);
+		printf(". %s\n", t);
+		printf("== %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
+		strcpy($$.ret, t);
+		hIndexS = 0;
 		} 
+	| Expression NEQ Expression
+	| Expression LT Expression
+	| Expression GT Expression
+	| Expression LTE Expression
+	| Expression GTE Expression
+	| Expression Comp Expression
 	| TRUE 
 		{
 		reset();
@@ -470,68 +479,6 @@ Re:
 	| R_PAREN Bool_Expr {yyerror("missing \')\', assuming \')\' and continuing");}
 	;
 
-Comp:
-	  EQ 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf("== %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	| NEQ 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf("!= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	| LT 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf("< %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	| GT 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf("> %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	| LTE 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf("<= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	| GTE 
-		{
-			reset();
-			temp();
-			char *t = strdup(tmp);
-			printf(". %s\n", t);
-			printf(">= %s, %s, %s\n", t, holdS[0].ret, holdS[1].ret);
-			strcpy($$.ret, t);
-			hIndexS = 0;
-		}
-	;
 
 Expression:
 	  Multiplicative_Expr {$$ = $1;} 
